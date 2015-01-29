@@ -16,89 +16,66 @@ public class MainClass
 {
     
     TreeNode root;
+    EntropyCalculation calculation;
+    
+    public MainClass()
+    {
+        calculation=new EntropyCalculation();
+    }
     
     
     public TreeNode growTree(ArrayList<DataSetRow> dataSet) {
+        
+        if(dataSet==null)
+            return null;
+        
+        if(calculation.CheckAllOneStopConstraint(dataSet,"Class")==true || calculation.CheckAllZeroStopConstraint(dataSet,"Class")==true)
+            return null;
+        
         if(root == null)
         {
             //first iteration
-            Random rand = new Random();
-            String bestAttr = Integer.toString(rand.nextInt(100));
-            root = new TreeNode(bestAttr);
+            String bestAttribute=calculation.ChooseNextBestAttribute(dataSet);
+            root = new TreeNode(bestAttribute);
+            
+            ArrayList<ArrayList<DataSetRow>> dividedDataSet=new ArrayList<>();
+            dividedDataSet=calculation.ExtractDatawithZeroesAndOnesAttributeValue(dataSet, bestAttribute);
             //Get 0's ArrayList
-            root.left = growTree(null);
+            root.left = growTree(dividedDataSet.get(0));
             
             //get 1's ArrayList
-            root.right = growTree(null);
+            root.right = growTree(dividedDataSet.get(1));
             
             return root;
         }
         else 
         {
-            Random rand = new Random();
-            int number = rand.nextInt(10);
-            if(number%2 == 0)
-                return null;
-            String bestAttr = Integer.toString(number);
+            String bestAttribute=calculation.ChooseNextBestAttribute(dataSet);
             
+            TreeNode newNode = new TreeNode(bestAttribute);
             
-            TreeNode newNode = new TreeNode(bestAttr);
-            //Get 0's ArrayList
-            newNode.left = growTree(null);
+            ArrayList<ArrayList<DataSetRow>> dividedDataSet=new ArrayList<>();
+            dividedDataSet=calculation.ExtractDatawithZeroesAndOnesAttributeValue(dataSet, bestAttribute);
+            
+            newNode.left = growTree(dividedDataSet.get(0));
             
             //get 1's ArrayList
-            newNode.right = growTree(null);
+            newNode.right = growTree(dividedDataSet.get(1));
             
             return newNode;
         }
         
     }
     
-    public static void main(String atgs[])
+    public static void main(String args[])
     {
         ExtractData dataExtraction=new ExtractData();
         //dataExtraction.ExtractDataFromDataSet();
         ArrayList<DataSetRow> data=dataExtraction.ExtractDataFromDataSet();
+        MainClass m=new MainClass();
+        TreeNode resultantTree=m.growTree(data);
+        System.out.println("");
 
-
-
-    /*
-    EntropyCalculation calc=new EntropyCalculation();
-    ArrayList<ArrayList<DataSetRow>> returnData = calc.ExtractDatawithZeroesAndOnesAttributeValue(data, "XB");
-    System.out.print("asd");
-
-
-    double classEntropy=calc.ClassEntropyCalculation(data); 
-    double maxGain=-1.0;
-    //System.out.println(classEntropy);
-    for(int i=0;i<21;i++)
-    {
-        double gain=calc.AttributeGainCalculation(data,i,classEntropy);
-        if(gain>maxGain)
-        {
-            maxGain=gain;
-        }
-        System.out.println(i+1+ "-"+gain);
-    }
-    System.out.println("**"+maxGain);
-    //AttributeGainCalculation
-
-
-    //check labels
-    ArrayList<Integer> classValues=new ArrayList<>();
-    for(int i=0;i<data.size();i++)
-    {
-        if(data.get(i).attributName.equals("Class"))
-        {
-
-            classValues=data.get(i).attributeValues;
-        }
-    }
-
-    for(int i=0;i<classValues.size();i++)
-    {
-        System.out.println(classValues.get(i));
-    }
-    */ 
+   
     }
  }

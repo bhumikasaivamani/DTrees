@@ -158,7 +158,7 @@ public class EntropyCalculation
     
     public double ClassEntropyCalculation(ArrayList<DataSetRow> Data)
     {
-        int totalAttributes=21;
+        int totalAttributes=Data.size();
         int numberOfZeroes;
         int numberOfOnes;
         int totalNumber;
@@ -199,6 +199,8 @@ public class EntropyCalculation
       numberOfOnes=oneIndexes.size();
       totalNumber=numberOfZeroes+numberOfOnes;
       
+      if(numberOfZeroes==0 || numberOfOnes==0)
+          return 99999;
       pplus=(double)numberOfZeroes/totalNumber;
       pminus=(double)(numberOfOnes)/totalNumber;
       double entropy=(double)((-1)*pplus*(Math.log(pplus)/Math.log(2))-pminus*(Math.log(pminus)/Math.log(2)));  
@@ -209,7 +211,7 @@ public class EntropyCalculation
     
     public double AttributeGainCalculation(ArrayList<DataSetRow> Data,int attributeIndex,double classEntropy)
     {
-        int totalAttributes=21;
+        int totalAttributes=Data.size();
         int numberOfZeroes;
         int numberOfOnes;
         int totalNumber;
@@ -243,6 +245,9 @@ public class EntropyCalculation
         double zeroEntropy=FindEntropyValue(zeroIndexValues);
         double oneEntropy=FindEntropyValue(oneIndexValues);
         
+        if(zeroEntropy==99999 || oneEntropy==99999)
+            return 99999;
+        
         double positive=(double)0.0;
         positive=(double)((double)numberOfZeroes/(double)totalNumber)*zeroEntropy;
         double negative=(double)0.0;
@@ -254,7 +259,7 @@ public class EntropyCalculation
     
     public String ChooseNextBestAttribute(ArrayList<DataSetRow> data)
     {
-        int numberOfAttributes=data.size();
+        int numberOfAttributes=data.size()-1;
         double maxGain=-1;
         int attributeWithMaxGainIndex=-1;
         double classEntropy=ClassEntropyCalculation(data); //change it so that it sees the label
