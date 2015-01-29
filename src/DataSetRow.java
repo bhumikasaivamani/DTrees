@@ -13,11 +13,11 @@ import java.util.ArrayList;
  */
 public class DataSetRow 
 {
-    public String attributName;
+    public String attributeName;
     public ArrayList<Integer> attributeValues;
     
     public DataSetRow(String name) {
-        attributName = name;
+        attributeName = name;
         attributeValues = new ArrayList<>();
     }
 }
