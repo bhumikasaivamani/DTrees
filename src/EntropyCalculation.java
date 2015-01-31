@@ -155,7 +155,63 @@ public class EntropyCalculation
         return zeroIndexes;
     }
     
+    public double ClassVarianceCalculation(ArrayList<DataSetRow> data)
+    {
+        int totalAttributes=data.size();
+        int numberOfZeroes;
+        int numberOfOnes;
+        int totalNumber;
+        double pplus=(double)0.0;
+        double pminus=(double)0.0;
+        
+        ArrayList<Integer> zeroIndexes;
+        ArrayList<Integer> oneIndexes;
+        ArrayList<Integer> classColumn=new ArrayList<>();
+        classColumn=findAttributeValuesWithLabel(data,data.get(totalAttributes-1).attributeName);//Data.get(totalAttributes-1).attributeValues;//ExtractColumn(Data,totalAttributes-1);
+        
+        
+        zeroIndexes=FindZeroIndexes(classColumn);
+        oneIndexes=FindOneIndexes(classColumn);
+        numberOfZeroes=zeroIndexes.size();
+        numberOfOnes=oneIndexes.size();
+        totalNumber=numberOfZeroes+numberOfOnes;
+        
+        pplus=(double)numberOfZeroes/totalNumber;
+        pminus=(double)(numberOfOnes)/totalNumber;
+        
+        double classVariance=(double)(pplus*pminus);
+        return classVariance;
+    }
     
+    
+    public double FindVarianceValue(ArrayList<Integer> listOfValues)
+    {
+        int numberOfZeroes;
+        int numberOfOnes;
+        int totalNumber;
+        double pplus=(double)0.0;
+        double pminus=(double)0.0;
+        
+        ArrayList<Integer> zeroIndexes;
+        ArrayList<Integer> oneIndexes;
+        
+        zeroIndexes=FindZeroIndexes(listOfValues);
+        oneIndexes=FindOneIndexes(listOfValues);
+        numberOfZeroes=zeroIndexes.size();
+        numberOfOnes=oneIndexes.size();
+        totalNumber=numberOfZeroes+numberOfOnes;
+        
+        
+       pplus=(double)numberOfZeroes/totalNumber;
+       pminus=(double)(numberOfOnes)/totalNumber;
+        
+        if(numberOfZeroes==0 || numberOfOnes==0)
+          return 99999;
+        
+        double attributeVariance=(double)(pplus*pminus);
+        
+        return attributeVariance;
+    }
     public double ClassEntropyCalculation(ArrayList<DataSetRow> Data)
     {
         int totalAttributes=Data.size();
@@ -256,7 +312,72 @@ public class EntropyCalculation
         return gain;
     }
     
+    public double AttributeGainCalculationByVariance(ArrayList<DataSetRow> Data,int attributeIndex,double classVariance)
+    {
+        int totalAttributes=Data.size();
+        int numberOfZeroes;
+        int numberOfOnes;
+        int totalNumber;
+        
+        ArrayList<Integer> zeroIndexes;
+        ArrayList<Integer> oneIndexes;
+        ArrayList<Integer> attributeColumn=new ArrayList<>();
+        attributeColumn=Data.get(attributeIndex).attributeValues;
+        
+        zeroIndexes=FindZeroIndexes(attributeColumn);
+        oneIndexes=FindOneIndexes(attributeColumn);
+        numberOfZeroes=zeroIndexes.size();
+        numberOfOnes=oneIndexes.size();
+        totalNumber=numberOfZeroes+numberOfOnes;
+        
+        
+        ArrayList<Integer> zeroIndexValues=new ArrayList<>();
+        ArrayList<Integer> oneIndexValues =new ArrayList<>();
+        
+        for(int i=0;i<zeroIndexes.size();i++)
+        {
+            zeroIndexValues.add(Data.get(totalAttributes-1).attributeValues.get(zeroIndexes.get(i)));
+            //zeroIndexValues.add(Data.get(zeroIndexes.get(i)).rowList[totalAttributes-1]);
+        }
+        
+        for(int i=0;i<oneIndexes.size();i++)
+        {
+            oneIndexValues.add(Data.get(totalAttributes-1).attributeValues.get(oneIndexes.get(i)));
+        }
+        
+        double zeroEntropy=FindVarianceValue(zeroIndexValues);
+        double oneEntropy=FindVarianceValue(oneIndexValues);
+        
+        if(zeroEntropy==99999 || oneEntropy==99999)
+            return 99999;
+        
+        double positive=(double)0.0;
+        positive=(double)((double)numberOfZeroes/(double)totalNumber)*zeroEntropy;
+        double negative=(double)0.0;
+        negative=(double)((double)numberOfOnes/(double)totalNumber)*oneEntropy;
+        double gain=classVariance-positive-negative;
+        return gain;
+    }
     
+    public String ChooseNextAttributeByVariance(ArrayList<DataSetRow> data)
+    {
+        int numberOfAttributes=data.size()-1;
+        double maxGain=-1;
+        int attributeWithMaxGainIndex=-1;
+        double classVariance=ClassVarianceCalculation(data); //change it so that it sees the label
+        for(int i=0;i<numberOfAttributes;i++)
+        {
+            double gain=AttributeGainCalculationByVariance(data,i,classVariance);
+            System.out.println(gain);
+            if(gain>maxGain)
+            {
+                maxGain=gain;
+                attributeWithMaxGainIndex=i;
+            }
+        }
+        System.out.println("**"+maxGain);
+        return data.get(attributeWithMaxGainIndex).attributeName;
+    }
     public String ChooseNextBestAttribute(ArrayList<DataSetRow> data)
     {
         int numberOfAttributes=data.size()-1;
