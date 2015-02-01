@@ -25,7 +25,7 @@ public class ExtractData
         int totalAttributes=21;
         try
         {
-            fileReader=new FileReader("/Users/bhumikasaivamani/NetBeansProjects/DecisionTree/src/training_set_small.csv");
+            fileReader=new FileReader("/Users/bhumikasaivamani/NetBeansProjects/DecisionTree/src/training_set_1.csv");
             BufferedReader br=new BufferedReader(fileReader);
             String intialline=br.readLine();
             //first line

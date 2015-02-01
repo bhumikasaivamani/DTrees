@@ -368,14 +368,14 @@ public class EntropyCalculation
         for(int i=0;i<numberOfAttributes;i++)
         {
             double gain=AttributeGainCalculationByVariance(data,i,classVariance);
-            System.out.println(gain);
+            
             if(gain>maxGain)
             {
                 maxGain=gain;
                 attributeWithMaxGainIndex=i;
             }
         }
-        System.out.println("**"+maxGain);
+        //System.out.println("**"+maxGain);
         return data.get(attributeWithMaxGainIndex).attributeName;
     }
     public String ChooseNextBestAttribute(ArrayList<DataSetRow> data)

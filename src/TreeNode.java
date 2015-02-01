@@ -12,8 +12,12 @@ public class TreeNode {
     public TreeNode left;
     public TreeNode right;
     public String value;
+    public int LeafValue;
+    public int visited;
     
     public TreeNode(String attr){
+        LeafValue=-1;
         value = attr;
+        visited=0;
     }
 }
