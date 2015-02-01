@@ -82,15 +82,30 @@ public class MainClass
         
     }
     
-    public TreeNode growTreeByVarianceHeuristic(ArrayList<DataSetRow> dataSet) 
+    public TreeNode growTreeByVarianceHeuristic(ArrayList<DataSetRow> dataSet,TreeNode node) 
     {
         
         if(dataSet==null)
             return null;
         
-        if(calculation.CheckAllOneStopConstraint(dataSet,"Class")==true || calculation.CheckAllZeroStopConstraint(dataSet,"Class")==true)
-            return null;
         
+        if(calculation.CheckAllOneStopConstraint(dataSet,"Class")==true)
+        {
+            TreeNode newLeafNode =new TreeNode("Leaf");
+            newLeafNode.left=null;
+            newLeafNode.right=null;
+            newLeafNode.LeafValue=1;
+            return newLeafNode;
+        }
+        if(calculation.CheckAllZeroStopConstraint(dataSet,"Class")==true)
+        {
+            TreeNode newLeafNode =new TreeNode("Leaf");
+            newLeafNode.left=null;
+            newLeafNode.right=null;
+            newLeafNode.LeafValue=0;
+            return newLeafNode;
+            
+        }
         if(root == null)
         {
             //first iteration
@@ -100,10 +115,10 @@ public class MainClass
             ArrayList<ArrayList<DataSetRow>> dividedDataSet=new ArrayList<>();
             dividedDataSet=calculation.ExtractDatawithZeroesAndOnesAttributeValue(dataSet, bestAttribute);
             //Get 0's ArrayList
-            root.left = growTreeByVarianceHeuristic(dividedDataSet.get(0));
+            root.left = growTreeByVarianceHeuristic(dividedDataSet.get(0),root);
             
             //get 1's ArrayList
-            root.right = growTreeByVarianceHeuristic(dividedDataSet.get(1));
+            root.right = growTreeByVarianceHeuristic(dividedDataSet.get(1),root);
             
             
             return root;
@@ -117,10 +132,10 @@ public class MainClass
             ArrayList<ArrayList<DataSetRow>> dividedDataSet=new ArrayList<>();
             dividedDataSet=calculation.ExtractDatawithZeroesAndOnesAttributeValue(dataSet, bestAttribute);
             
-            newNode.left = growTreeByVarianceHeuristic(dividedDataSet.get(0));
+            newNode.left = growTreeByVarianceHeuristic(dividedDataSet.get(0),newNode);
             
             //get 1's ArrayList
-            newNode.right = growTreeByVarianceHeuristic(dividedDataSet.get(1));
+            newNode.right = growTreeByVarianceHeuristic(dividedDataSet.get(1),newNode);
            
             
             return newNode;
@@ -215,8 +230,8 @@ public class MainClass
         ArrayList<DataSetRow> data=dataExtraction.ExtractDataFromDataSet();
         MainClass m=new MainClass();
         TreeNode resultantTreeByInformationGainHeuristic=m.growTree(data,null);
-        TreeNode resultantTreeByVarianceHeuristic=m.growTreeByVarianceHeuristic(data);
-        m.PrintTree(resultantTreeByInformationGainHeuristic,0,0);
+        TreeNode resultantTreeByVarianceHeuristic=m.growTreeByVarianceHeuristic(data,null);
+        m.PrintTree(resultantTreeByVarianceHeuristic,0,0);
         System.out.println("");
         
         /*variance check
