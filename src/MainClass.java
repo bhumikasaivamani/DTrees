@@ -44,6 +44,7 @@ public class MainClass
             newLeafNode.right=null;
             newLeafNode.LeafValue=0;
             return newLeafNode;
+            
         }
         
         if(root == null)
