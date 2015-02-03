@@ -17,12 +17,18 @@ public class MainClass
     
     TreeNode root;
     EntropyCalculation calculation;
+    ExtractData dataExtraction;
     int leafCount;
     int nonLeafCount;
+    int returnLeafValue;
+    ArrayList<DataSetRow> validationData;
     
     public MainClass()
     {
         calculation=new EntropyCalculation();
+        dataExtraction=new ExtractData();
+        validationData=dataExtraction.ExtractDataFromDataSet("/Users/bhumikasaivamani/NetBeansProjects/DecisionTree/src/validation_set.csv");
+        
     }
     
     
@@ -329,7 +335,8 @@ public class MainClass
         CopiedTreeInfo copiedTree=new CopiedTreeInfo();
         copiedTree=CloneTree(tree);
         TreeNode DBest=copiedTree.root;
-        double bestAccuracy=FindAccuracy(tree);
+        double bestAccuracy=CalculateAccuracy(tree,validationData);//FindAccuracy(tree);
+        System.out.println("Accuracy of Tree before Pruning :"+bestAccuracy);
         for(int i=1;i<=l;i++)
         {
             CopiedTreeInfo DPrime=new CopiedTreeInfo();
@@ -350,21 +357,76 @@ public class MainClass
                 PruneTree(DPrimeClone.root,P);
                 DPrime = DPrimeClone;
             }
-            double accuracy=FindAccuracy(DPrime.root);
+            double accuracy=CalculateAccuracy(DPrime.root,validationData);//FindAccuracy(DPrime.root);
             if(accuracy>bestAccuracy)
             {
                 bestAccuracy=accuracy;
                 DBest=DPrime.root;
             }
         }
+       System.out.println("Accuracy of Tree after Pruning :"+bestAccuracy); 
        return DBest; 
+    }
+    
+   public void FindLeafValueForAccuracyByTraversingValidationSet(int rowNumber,ArrayList<DataSetRow> data,TreeNode node)
+   {
+       if(node==null)
+           return;
+       if(node.value.equals("Leaf"))
+       {
+           returnLeafValue=node.LeafValue;
+           return;
+       }
+   
+        String attributeName=node.value;
+        int indexOfAttribute=calculation.FindAttributeIndexWithLabel(data,attributeName);
+        int attributeValue=data.get(indexOfAttribute).attributeValues.get(rowNumber);
+        if(attributeValue==0)
+        {
+            if(node.left!=null)
+            {
+                FindLeafValueForAccuracyByTraversingValidationSet(rowNumber,data,node.left);
+            }
+        }
+            
+        if(attributeValue==1)
+        {
+            if(node.right!=null)
+            {
+                FindLeafValueForAccuracyByTraversingValidationSet(rowNumber,data,node.right);
+            }
+        }
+       
+   }
+   public double CalculateAccuracy(TreeNode node,ArrayList<DataSetRow> data)
+    {
+        int numberOfAttributes=data.size();
+        int accuracyCount=0;
+        if(node==null)
+            return 0;
+        
+        for(int i=0;i<data.get(0).attributeValues.size();i++)
+        {
+           returnLeafValue=-999;
+           FindLeafValueForAccuracyByTraversingValidationSet(i,data,node);  
+           int returnValue=returnLeafValue;
+           int indexOfClass=calculation.FindAttributeIndexWithLabel(data,"Class");
+           int attributeValue=data.get(indexOfClass).attributeValues.get(i);
+           
+           if(returnValue==attributeValue)
+               accuracyCount++;
+         }
+        double accuracy=(double)accuracyCount/(data.get(0).attributeValues.size());
+        return accuracy;
+        
     }
     public static void main(String args[])
     {
-        ExtractData dataExtraction=new ExtractData();
+        
         //dataExtraction.ExtractDataFromDataSet();
-        ArrayList<DataSetRow> data=dataExtraction.ExtractDataFromDataSet();
+        
         MainClass m=new MainClass();
+        ArrayList<DataSetRow> data=m.dataExtraction.ExtractDataFromDataSet("/Users/bhumikasaivamani/NetBeansProjects/DecisionTree/src/training_set_1.csv");
         m.leafCount=0;
         m.nonLeafCount=0;
         TreeNode resultantTreeByInformationGainHeuristic=m.growTree(data,null);
@@ -372,8 +434,8 @@ public class MainClass
         m.PrintTree(resultantTreeByVarianceHeuristic,0,0);
         TreeNode t=m.PostPruning(resultantTreeByVarianceHeuristic, 5, 10);
         
-        //m.OrderNodes(resultantTreeByVarianceHeuristic,1);
-       
+        m.OrderNodes(resultantTreeByVarianceHeuristic,1);
+        
         System.out.println("__________________");
         m.PrintTree(t, 0,0);
       

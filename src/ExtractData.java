@@ -16,7 +16,7 @@ import java.util.StringTokenizer;
  */
 public class ExtractData 
 {
-    public ArrayList<DataSetRow> ExtractDataFromDataSet()
+    public ArrayList<DataSetRow> ExtractDataFromDataSet(String filePath)
     {
         FileReader fileReader;
         ArrayList<DataSetRow> Data = new ArrayList<>();
@@ -25,7 +25,7 @@ public class ExtractData
         int totalAttributes=21;
         try
         {
-            fileReader=new FileReader("/Users/bhumikasaivamani/NetBeansProjects/DecisionTree/src/training_set_small.csv");
+            fileReader=new FileReader(filePath);
             BufferedReader br=new BufferedReader(fileReader);
             String intialline=br.readLine();
             //first line
