@@ -52,6 +52,7 @@ public class EntropyCalculation
     
     public ArrayList<ArrayList<DataSetRow>> ExtractDatawithZeroesAndOnesAttributeValue(ArrayList<DataSetRow> data,String attributeName)
     {
+        
         ArrayList<DataSetRow> output0 = new ArrayList<>();
         ArrayList<DataSetRow> output1 = new ArrayList<>();
         int attIndex = -1;
@@ -361,6 +362,8 @@ public class EntropyCalculation
     
     public String ChooseNextAttributeByVariance(ArrayList<DataSetRow> data)
     {
+        if(data.size()==1)
+            return null;
         int numberOfAttributes=data.size()-1;
         double maxGain=-1;
         int attributeWithMaxGainIndex=-1;
@@ -380,6 +383,8 @@ public class EntropyCalculation
     }
     public String ChooseNextBestAttribute(ArrayList<DataSetRow> data)
     {
+        if(data.size()==1)
+            return null;
         int numberOfAttributes=data.size()-1;
         double maxGain=-1;
         int attributeWithMaxGainIndex=-1;

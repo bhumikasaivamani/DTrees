@@ -12,7 +12,7 @@ import java.util.Random;
  *
  * @author bhumikasaivamani
  */
-public class MainClass 
+public class backupclass 
 {
     
     TreeNode root;
@@ -23,7 +23,7 @@ public class MainClass
     int returnLeafValue;
     ArrayList<DataSetRow> validationData;
     
-    public MainClass()
+    public backupclass()
     {
         calculation=new EntropyCalculation();
         dataExtraction=new ExtractData();
@@ -58,25 +58,15 @@ public class MainClass
         {
             //first iteration
             String bestAttribute=calculation.ChooseNextBestAttribute(dataSet);
-            if(bestAttribute==null)
-            {
-            TreeNode newLeafNode =new TreeNode("Leaf");
-            newLeafNode.left=null;
-            newLeafNode.right=null;
-            newLeafNode.LeafValue=0;
-            return newLeafNode;
-            }
             root = new TreeNode(bestAttribute);
             
             ArrayList<ArrayList<DataSetRow>> dividedDataSet=new ArrayList<>();
             dividedDataSet=calculation.ExtractDatawithZeroesAndOnesAttributeValue(dataSet, bestAttribute);
-            root.data=dataSet;
             //Get 0's ArrayList
             root.left = growTree(dividedDataSet.get(0),root);
             
             //get 1's ArrayList
             root.right = growTree(dividedDataSet.get(1),root);
-          
             
             return root;
         }
@@ -84,27 +74,16 @@ public class MainClass
         {
             String bestAttribute=calculation.ChooseNextBestAttribute(dataSet);
             
-            if(bestAttribute==null)
-            {
-            TreeNode newLeafNode =new TreeNode("Leaf");
-            newLeafNode.left=null;
-            newLeafNode.right=null;
-            newLeafNode.LeafValue=0;
-            return newLeafNode;
-            }
-            
             TreeNode newNode = new TreeNode(bestAttribute);
-            
             
             ArrayList<ArrayList<DataSetRow>> dividedDataSet=new ArrayList<>();
             dividedDataSet=calculation.ExtractDatawithZeroesAndOnesAttributeValue(dataSet, bestAttribute);
-             newNode.data=dataSet;
+            
             newNode.left = growTree(dividedDataSet.get(0),newNode);
             
             //get 1's ArrayList
             newNode.right = growTree(dividedDataSet.get(1),newNode);
             
-           
             return newNode;
         }
         
@@ -158,14 +137,6 @@ public class MainClass
         {
             //first iteration
             String bestAttribute=calculation.ChooseNextAttributeByVariance(dataSet);
-            if(bestAttribute==null)
-            {
-            TreeNode newLeafNode =new TreeNode("Leaf");
-            newLeafNode.left=null;
-            newLeafNode.right=null;
-            newLeafNode.LeafValue=0;
-            return newLeafNode;
-            }
             root = new TreeNode(bestAttribute);
             
             ArrayList<ArrayList<DataSetRow>> dividedDataSet=new ArrayList<>();
@@ -183,14 +154,6 @@ public class MainClass
         else 
         {
             String bestAttribute=calculation.ChooseNextAttributeByVariance(dataSet);
-            if(bestAttribute==null)
-            {
-            TreeNode newLeafNode =new TreeNode("Leaf");
-            newLeafNode.left=null;
-            newLeafNode.right=null;
-            newLeafNode.LeafValue=0;
-            return newLeafNode;
-            }
             
             TreeNode newNode = new TreeNode(bestAttribute);
             
@@ -372,15 +335,13 @@ public class MainClass
         copiedTree=CloneTree(tree);
         TreeNode DBest=copiedTree.root;
         double bestAccuracy=CalculateAccuracy(tree,validationData);//FindAccuracy(tree);
-        //System.out.println("Accuracy of Tree before Pruning :"+bestAccuracy);
+        System.out.println("Accuracy of Tree before Pruning :"+bestAccuracy);
         for(int i=1;i<=l;i++)
         {
             CopiedTreeInfo DPrime=new CopiedTreeInfo();
             DPrime=CloneTree(tree);
             
             Random random = new Random();
-            if(k<=1)
-                continue;
             int M = random.nextInt(k - 1) + 1;
             
             for(int j=1;j<=M;j++)
@@ -402,7 +363,7 @@ public class MainClass
                 DBest=DPrime.root;
             }
         }
-       //System.out.println("Accuracy of Tree after Pruning :"+bestAccuracy); 
+       System.out.println("Accuracy of Tree after Pruning :"+bestAccuracy); 
        return DBest; 
     }
     
@@ -464,12 +425,12 @@ public class MainClass
    
    public static void main(String args[])
     {
-        int L=Integer.parseInt(args[0]);
-        int K=Integer.parseInt(args[1]);
-        String filePathForTrainingData=/*"/Users/bhumikasaivamani/NetBeansProjects/DecisionTree/src/training_set_2.csv";//*/args[2];
-        String filePathForTestData=/*"/Users/bhumikasaivamani/NetBeansProjects/DecisionTree/src/test_set_2.csv";//*/args[3];
-        String filePathForValidationData=/*"/Users/bhumikasaivamani/NetBeansProjects/DecisionTree/src/validation_set_2.csv";//*/args[4];
-        String to_Print="no";
+        int L=5;//Integer.parseInt(args[0]);
+        int K=10;//Integer.parseInt(args[1]);
+        String filePathForTrainingData="/Users/bhumikasaivamani/NetBeansProjects/DecisionTree/src/training_set_1.csv";//args[2];
+        String filePathForTestData="/Users/bhumikasaivamani/NetBeansProjects/DecisionTree/src/test_set_1.csv";//args[3];
+        String filePathForValidationData="/Users/bhumikasaivamani/NetBeansProjects/DecisionTree/src/validation_set_1.csv";//args[4];
+        String to_Print="yes";
         
         ///Users/bhumikasaivamani/NetBeansProjects/DecisionTree/src/mrun.csv");
         MainClass m=new MainClass();
@@ -488,7 +449,7 @@ public class MainClass
         System.out.println("Information Gain Heuristics "+accuracyIGHeuristics);
         System.out.println("Variance Heuristics"+accuracyVarHeuristics);
         
-        System.out.println("*****Accuracies After Pruning*****");
+        System.out.print("*****Accuracies After Pruning*****");
         TreeNode prunedTreeInformationGainHeuristics=m.PostPruning(resultantTreeByInformationGainHeuristic,L,K);
         TreeNode prunedTreeVarianceHeuristics=m.PostPruning(resultantTreeByVarianceHeuristic, L, K);
         double accuracyIGHeuristicsAfterPruning=m.CalculateAccuracy(prunedTreeInformationGainHeuristics, m.validationData);
@@ -498,8 +459,8 @@ public class MainClass
         
         if(to_Print.equalsIgnoreCase("yes"))
         {
-            //System.out.print("Tree From Information Gain Heuristics-(After Pruning");
-           // m.PrintTree(prunedTreeInformationGainHeuristics,0,0);
+            System.out.print("Tree From Information Gain Heuristics-(After Pruning");
+            m.PrintTree(prunedTreeInformationGainHeuristics,0,0);
             System.out.print("Tree From Variance Heuristics-(After Pruning");
             m.PrintTree(prunedTreeVarianceHeuristics,0,0);
         }
