@@ -16,7 +16,7 @@ public class MainClass
 {
     
     TreeNode root;
-    EntropyCalculation calculation;
+    DataManipulations calculation;
     ExtractData dataExtraction;
     int leafCount;
     int nonLeafCount;
@@ -25,12 +25,17 @@ public class MainClass
     
     public MainClass()
     {
-        calculation=new EntropyCalculation();
+        calculation=new DataManipulations();
         dataExtraction=new ExtractData();
         
     }
     
-    
+    /**
+     * Function to grow Tree with Information Gain Heuristics
+     * @param dataSet (subset of data in recursion)
+     * @param root Node (sunsequent nodes in recursion)
+     * @return Node of a Tree
+     */
      public TreeNode growTree(ArrayList<DataSetRow> dataSet,TreeNode node) {
         
         if(dataSet==null)
@@ -109,27 +114,13 @@ public class MainClass
         }
         
     }
-    public TreeNode copyTree(TreeNode node)
-    {
-        if(node==null)
-            return null;
-        
-        TreeNode newNode=new TreeNode(node.value);
-        newNode.LeafValue=node.LeafValue;
-        newNode.data=node.data;
-        newNode.left=copyTree(node.left);
-        newNode.right=copyTree(node.right);
-        if(!newNode.value.equals("Leaf"))
-        {
-            if(newNode.left.value.equals("Leaf") && newNode.right.value.equals("Leaf"))
-                leafCount++;
-            else {
-                nonLeafCount++;
-                newNode.nodeNumber = nonLeafCount;
-            }
-        }
-        return newNode;
-    }
+    
+     /**
+     * Function to grow Tree with Variance Heuristics
+     * @param dataSet (subset of data in recursion)
+     * @param root Node (sunsequent nodes in recursion)
+     * @return Node of a Tree
+     */
     public TreeNode growTreeByVarianceHeuristic(ArrayList<DataSetRow> dataSet,TreeNode node) 
     {
         
@@ -209,6 +200,10 @@ public class MainClass
         
     }
     
+    /**
+     * Methods to check whether particular node in a tree is visited.(Used to print Tree)
+     * @param node 
+     */
     public void Visited(TreeNode node)
     {
         node.visited=1;
@@ -220,6 +215,12 @@ public class MainClass
         else
             return false;
     }
+    /**
+     * Function to Print Tree
+     * @param rootNode (subsequent nodes given in recursion)
+     * @param level (starts with zero level)
+     * @param value (determines whether to give zero or one)
+     */
     public void PrintTree(TreeNode rootNode, int level, int value)
     {
         if(rootNode == null)
@@ -289,6 +290,38 @@ public class MainClass
         
     }
     
+    /**
+     * Function to copy a tree,assign node number and count number of leaf and non leaf node 
+     * @param node
+     * @return 
+     */ 
+    public TreeNode copyTree(TreeNode node)
+    {
+        if(node==null)
+            return null;
+        
+        TreeNode newNode=new TreeNode(node.value);
+        newNode.LeafValue=node.LeafValue;
+        newNode.data=node.data;
+        newNode.left=copyTree(node.left);
+        newNode.right=copyTree(node.right);
+        if(!newNode.value.equals("Leaf"))
+        {
+            if(newNode.left.value.equals("Leaf") && newNode.right.value.equals("Leaf"))
+                leafCount++;
+            else {
+                nonLeafCount++;
+                newNode.nodeNumber = nonLeafCount;
+            }
+        }
+        return newNode;
+    }
+    
+    /**
+     * Function to create a copied structure where leafcount and non leaf count is included along with a copied tree
+     * @param root
+     * @return 
+     */
    public CopiedTreeInfo CloneTree(TreeNode root)
    {
        leafCount=0;
@@ -300,22 +333,35 @@ public class MainClass
        return copiedTreeInfo;
        
    }
-   public void OrderNodes(TreeNode node,int initNodeNumber)
-   {
-       if(node==null || node.value.equals("Leaf"))
-           return;
-       
-       if(!node.value.equals("Leaf"))
-        {
-            if(node.left.value.equals("Leaf") && node.right.value.equals("Leaf"))
-                return;
-        }
-       node.nodeNumber=initNodeNumber++;
-        if(node.left!=null)
-            OrderNodes(node.left,initNodeNumber++);
-        if(node.right!=null)
-            OrderNodes(node.right,initNodeNumber++);
-   }
+   
+   /**
+    * Function to FInd replacement Leaf class for a particular node given the node number
+    * @param node
+    * @param nodeNumber
+    * @return 
+    */
+   public int FindLeafClass(TreeNode node,int nodeNumber)
+    {
+        
+        TreeNode nodeToBePruned=FindReplacementLeafNode(node,nodeNumber);
+        ArrayList<DataSetRow> data=new ArrayList<DataSetRow>();
+        data=nodeToBePruned.data;
+        ArrayList<ArrayList<DataSetRow>> result=calculation.ExtractDatawithZeroesAndOnesAttributeValue(data,"Class");
+        int numberOfZeroes=result.get(0)!=null?result.get(0).size():0;
+        int numberOfOnes=result.get(1)!=null?result.get(1).size():0;
+        
+        if (numberOfZeroes>numberOfOnes)
+            return 0;
+        else
+            return 1;
+        
+    }
+   
+   /**
+    * Function to prune a given tree and replace with appropriate leaf by analyzing subset of data
+    * @param node
+    * @param nodeNumber 
+    */
    public void PruneTree(TreeNode node,int nodeNumber)
    {
        if(root==null)
@@ -337,6 +383,7 @@ public class MainClass
        PruneTree(node.right,nodeNumber);
        
    }
+   
    public  TreeNode FindReplacementLeafNode(TreeNode node,int nodeNumber)
    {
        if(node==null)
@@ -349,30 +396,20 @@ public class MainClass
            FindReplacementLeafNode(node.right,nodeNumber);
        return null;
    }
-    public int FindLeafClass(TreeNode node,int nodeNumber)
-    {
-        
-        TreeNode nodeToBePruned=FindReplacementLeafNode(node,nodeNumber);
-        ArrayList<DataSetRow> data=new ArrayList<DataSetRow>();
-        data=nodeToBePruned.data;
-        ArrayList<ArrayList<DataSetRow>> result=calculation.ExtractDatawithZeroesAndOnesAttributeValue(data,"Class");
-        int numberOfZeroes=result.get(0)!=null?result.get(0).size():0;
-        int numberOfOnes=result.get(1)!=null?result.get(1).size():0;
-        
-        if (numberOfZeroes>numberOfOnes)
-            return 0;
-        else
-            return 1;
-        
-    }
+    /**
+     * Function to perform post pruning as given in algorithm
+     * @param tree
+     * @param k
+     * @param l
+     * @return 
+     */
     public TreeNode PostPruning(TreeNode tree,int k,int l)
     {
        
         CopiedTreeInfo copiedTree=new CopiedTreeInfo();
         copiedTree=CloneTree(tree);
         TreeNode DBest=copiedTree.root;
-        double bestAccuracy=CalculateAccuracy(tree,validationData);//FindAccuracy(tree);
-        //System.out.println("Accuracy of Tree before Pruning :"+bestAccuracy);
+        double bestAccuracy=CalculateAccuracy(tree,validationData);
         for(int i=1;i<=l;i++)
         {
             CopiedTreeInfo DPrime=new CopiedTreeInfo();
@@ -402,10 +439,14 @@ public class MainClass
                 DBest=DPrime.root;
             }
         }
-       //System.out.println("Accuracy of Tree after Pruning :"+bestAccuracy); 
        return DBest; 
     }
-    
+   /**
+    * Find leaf value for calculating accuracy-start from a articular node and go until root according to each row of data and find leaf value for comparison
+    * @param rowNumber
+    * @param data
+    * @param node 
+    */ 
    public void FindLeafValueForAccuracyByTraversingValidationSet(int rowNumber,ArrayList<DataSetRow> data,TreeNode node)
    {
        if(node==null)
@@ -436,6 +477,12 @@ public class MainClass
         }
        
    }
+   /**
+    * Function to calculate accuracy of tree by comparing with validation set or test set
+    * @param node
+    * @param data
+    * @return 
+    */
    public double CalculateAccuracy(TreeNode node,ArrayList<DataSetRow> data)
     {
         int numberOfAttributes=data.size();
@@ -459,19 +506,15 @@ public class MainClass
         
     }
    
-   // 5 10 /Users/bhumikasaivamani/NetBeansProjects/DecisionTree/src/training_set_1.csv /Users/bhumikasaivamani/NetBeansProjects/DecisionTree/src/test_set_1.csv /Users/bhumikasaivamani/NetBeansProjects/DecisionTree/src/validation_set_1.csv yes
-   // 5 10 /Users/bhumikasaivamani/NetBeansProjects/DecisionTree/src/training_set_2.csv /Users/bhumikasaivamani/NetBeansProjects/DecisionTree/src/test_set_2.csv /Users/bhumikasaivamani/NetBeansProjects/DecisionTree/src/validation_set_2.csv yes
-   
    public static void main(String args[])
     {
         int L=Integer.parseInt(args[0]);
         int K=Integer.parseInt(args[1]);
-        String filePathForTrainingData=/*"/Users/bhumikasaivamani/NetBeansProjects/DecisionTree/src/training_set_2.csv";//*/args[2];
-        String filePathForTestData=/*"/Users/bhumikasaivamani/NetBeansProjects/DecisionTree/src/test_set_2.csv";//*/args[3];
-        String filePathForValidationData=/*"/Users/bhumikasaivamani/NetBeansProjects/DecisionTree/src/validation_set_2.csv";//*/args[4];
-        String to_Print="no";
-        
-        ///Users/bhumikasaivamani/NetBeansProjects/DecisionTree/src/mrun.csv");
+        String filePathForTrainingData=args[2];
+        String filePathForTestData=args[3];
+        String filePathForValidationData=args[4];
+        String to_Print=args[5];
+     
         MainClass m=new MainClass();
         ArrayList<DataSetRow> data=m.dataExtraction.ExtractDataFromDataSet(filePathForTrainingData);
         m.validationData=m.dataExtraction.ExtractDataFromDataSet(filePathForValidationData);
@@ -482,13 +525,13 @@ public class MainClass
         
         TreeNode resultantTreeByInformationGainHeuristic=m.growTree(data,null);
         TreeNode resultantTreeByVarianceHeuristic=m.growTreeByVarianceHeuristic(data,null);
-        System.out.println("*****Accuracies Before Pruning*****");
+        System.out.println("\tACCURACIES BEFORE PRUNING\t");
         double accuracyIGHeuristics=m.CalculateAccuracy(resultantTreeByInformationGainHeuristic, testData);
         double accuracyVarHeuristics=m.CalculateAccuracy(resultantTreeByVarianceHeuristic, testData);
         System.out.println("Information Gain Heuristics "+accuracyIGHeuristics);
         System.out.println("Variance Heuristics"+accuracyVarHeuristics);
         
-        System.out.println("*****Accuracies After Pruning*****");
+        System.out.println("\tACCURACIES AFTER PRUNING\t");
         TreeNode prunedTreeInformationGainHeuristics=m.PostPruning(resultantTreeByInformationGainHeuristic,L,K);
         TreeNode prunedTreeVarianceHeuristics=m.PostPruning(resultantTreeByVarianceHeuristic, L, K);
         double accuracyIGHeuristicsAfterPruning=m.CalculateAccuracy(prunedTreeInformationGainHeuristics, m.validationData);
@@ -498,16 +541,13 @@ public class MainClass
         
         if(to_Print.equalsIgnoreCase("yes"))
         {
-            //System.out.print("Tree From Information Gain Heuristics-(After Pruning");
-           // m.PrintTree(prunedTreeInformationGainHeuristics,0,0);
-            System.out.print("Tree From Variance Heuristics-(After Pruning");
+            System.out.println("\tPRINTING TREE\t");
+            System.out.println("Tree From Information Gain Heuristics-(After Pruning)");
+            m.PrintTree(prunedTreeInformationGainHeuristics,0,0);
+            System.out.println("Tree From Variance Heuristics-(After Pruning)");
             m.PrintTree(prunedTreeVarianceHeuristics,0,0);
         }
        
     }
 
-    public double FindAccuracy(TreeNode root) {
-       Random rand = new Random();
-       return rand.nextDouble()*100;
-    }
  }

@@ -11,7 +11,7 @@ import java.util.ArrayList;
  *
  * @author bhumikasaivamani
  */
-public class EntropyCalculation 
+public class DataManipulations 
 {
     public boolean CheckAllZeroStopConstraint(ArrayList<DataSetRow> data,String attributeName)
     {
