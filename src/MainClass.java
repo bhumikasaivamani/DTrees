@@ -525,6 +525,7 @@ public class MainClass
         
         TreeNode resultantTreeByInformationGainHeuristic=m.growTree(data,null);
         TreeNode resultantTreeByVarianceHeuristic=m.growTreeByVarianceHeuristic(data,null);
+        
         System.out.println("\tACCURACIES BEFORE PRUNING\t");
         double accuracyIGHeuristics=m.CalculateAccuracy(resultantTreeByInformationGainHeuristic, testData);
         double accuracyVarHeuristics=m.CalculateAccuracy(resultantTreeByVarianceHeuristic, testData);

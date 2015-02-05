@@ -13,6 +13,12 @@ import java.util.ArrayList;
  */
 public class DataManipulations 
 {
+    /**
+     * Function returns true if class value of data or subset of data is all zeroes
+     * @param data
+     * @param attributeName
+     * @return 
+     */
     public boolean CheckAllZeroStopConstraint(ArrayList<DataSetRow> data,String attributeName)
     {
         int indexOfClass =data.size()-1;
@@ -31,6 +37,13 @@ public class DataManipulations
             return false;
         
     }
+    
+    /**
+     * Function returns true if class value of data or subset of data is all ones
+     * @param data
+     * @param attributeName
+     * @return 
+     */
     public boolean CheckAllOneStopConstraint(ArrayList<DataSetRow> data,String attributeName)
     {
         int indexOfClass =data.size()-1;
@@ -50,6 +63,12 @@ public class DataManipulations
         
     }
     
+    /**
+     * Returns two arrayLists with data having one and zero as attribute values seperately
+     * @param data
+     * @param attributeName
+     * @return 
+     */
     public ArrayList<ArrayList<DataSetRow>> ExtractDatawithZeroesAndOnesAttributeValue(ArrayList<DataSetRow> data,String attributeName)
     {
         
@@ -89,19 +108,13 @@ public class DataManipulations
         output.add(output0);
         output.add(output1);
         return output;
-        
-        /*
-        int attributeIndex=FindAttributeIndexWithLabel(data,attributeName);
-        ArrayList<Integer> attributeValues=new ArrayList<>();
-        
-        attributeValues=findAttributeValuesWithLabel(data,attributeName);
-        ArrayList<Integer> zeroIndexes=new ArrayList<Integer>();
-        zeroIndexes=FindZeroIndexes(zeroIndexes);
-        
-        ArrayList<DataSetRow> returnData=new ArrayList<DataSetRow>();
-        */
     }
-    
+    /**
+     * Given Index find the index of the attribute given the attribute name
+     * @param data
+     * @param attributeLabel
+     * @return 
+     */
     public int FindAttributeIndexWithLabel(ArrayList<DataSetRow> data,String attributeLabel)
     {
         int attributeIndex=-1;
@@ -115,6 +128,13 @@ public class DataManipulations
         return attributeIndex;
 
     }
+    
+    /**
+     * Function returns values of particular attribute given the attribute name
+     * @param data
+     * @param attributeLabel
+     * @return 
+     */
     public ArrayList<Integer> findAttributeValuesWithLabel(ArrayList<DataSetRow> data,String attributeLabel)
     {
         ArrayList<Integer> attributeValues=new ArrayList<>();
@@ -128,6 +148,12 @@ public class DataManipulations
         }
         return attributeValues;
     }
+    
+    /**
+     * Given a list of data returns arraylist containing indexes of attribute row having value one
+     * @param data
+     * @return 
+     */
     public ArrayList<Integer> FindOneIndexes(ArrayList<Integer> data)
     {
         //returns indexed of the array where the value is zero
@@ -141,7 +167,12 @@ public class DataManipulations
         }
         return oneIndexes;
     }
-    
+   
+    /**
+     * Given a list of data returns arraylist containing indexes of attribute row having value zero
+     * @param data
+     * @return 
+     */
     public ArrayList<Integer> FindZeroIndexes(ArrayList<Integer> data)
     {
         //returns indexes of the array where the value is zero
@@ -155,7 +186,11 @@ public class DataManipulations
         }
         return zeroIndexes;
     }
-    
+    /**
+     * Function to calculate variance for class
+     * @param data
+     * @return 
+     */
     public double ClassVarianceCalculation(ArrayList<DataSetRow> data)
     {
         int totalAttributes=data.size();
@@ -184,7 +219,11 @@ public class DataManipulations
         return classVariance;
     }
     
-    
+    /**
+     * Given a list having attribute values returns variance
+     * @param listOfValues
+     * @return 
+     */
     public double FindVarianceValue(ArrayList<Integer> listOfValues)
     {
         int numberOfZeroes;
@@ -213,6 +252,12 @@ public class DataManipulations
         
         return attributeVariance;
     }
+    
+    /**
+     * Function to calculate entropy of class
+     * @param Data
+     * @return 
+     */
     public double ClassEntropyCalculation(ArrayList<DataSetRow> Data)
     {
         int totalAttributes=Data.size();
@@ -239,6 +284,11 @@ public class DataManipulations
         return entropy;
     }
     
+    /**
+     * Function to calculate entropy of attributes
+     * @param listOfValues
+     * @return 
+     */
     public double FindEntropyValue(ArrayList<Integer> listOfValues)
     {
       int numberOfZeroes;
@@ -265,7 +315,13 @@ public class DataManipulations
       return entropy;
       
     }
-    
+    /**
+     * Function to calculate Gain given entropy
+     * @param Data
+     * @param attributeIndex
+     * @param classEntropy
+     * @return 
+     */
     public double AttributeGainCalculation(ArrayList<DataSetRow> Data,int attributeIndex,double classEntropy)
     {
         int totalAttributes=Data.size();
@@ -313,6 +369,13 @@ public class DataManipulations
         return gain;
     }
     
+    /**
+     * Function to calculate Gain given variance
+     * @param Data
+     * @param attributeIndex
+     * @param classVariance
+     * @return 
+     */
     public double AttributeGainCalculationByVariance(ArrayList<DataSetRow> Data,int attributeIndex,double classVariance)
     {
         int totalAttributes=Data.size();
@@ -359,7 +422,11 @@ public class DataManipulations
         double gain=classVariance-positive-negative;
         return gain;
     }
-    
+    /**
+     * Function to choose next attribute by considering variance heuristics
+     * @param data
+     * @return 
+     */
     public String ChooseNextAttributeByVariance(ArrayList<DataSetRow> data)
     {
         if(data.size()==1)
