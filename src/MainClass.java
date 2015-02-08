@@ -508,47 +508,55 @@ public class MainClass
    
    public static void main(String args[])
     {
-        int L=Integer.parseInt(args[0]);
-        int K=Integer.parseInt(args[1]);
-        String filePathForTrainingData=args[2];
-        String filePathForTestData=args[3];
-        String filePathForValidationData=args[4];
-        String to_Print=args[5];
-     
-        MainClass m=new MainClass();
-        ArrayList<DataSetRow> data=m.dataExtraction.ExtractDataFromDataSet(filePathForTrainingData);
-        m.validationData=m.dataExtraction.ExtractDataFromDataSet(filePathForValidationData);
-        ArrayList<DataSetRow> testData=m.dataExtraction.ExtractDataFromDataSet(filePathForTestData);
-        
-        m.leafCount=0;
-        m.nonLeafCount=0;
-        
-        TreeNode resultantTreeByInformationGainHeuristic=m.growTree(data,null);
-        TreeNode resultantTreeByVarianceHeuristic=m.growTreeByVarianceHeuristic(data,null);
-        
-        System.out.println("\tACCURACIES BEFORE PRUNING\t");
-        double accuracyIGHeuristics=m.CalculateAccuracy(resultantTreeByInformationGainHeuristic, testData);
-        double accuracyVarHeuristics=m.CalculateAccuracy(resultantTreeByVarianceHeuristic, testData);
-        System.out.println("Information Gain Heuristics "+accuracyIGHeuristics);
-        System.out.println("Variance Heuristics"+accuracyVarHeuristics);
-        
-        System.out.println("\tACCURACIES AFTER PRUNING\t");
-        TreeNode prunedTreeInformationGainHeuristics=m.PostPruning(resultantTreeByInformationGainHeuristic,L,K);
-        TreeNode prunedTreeVarianceHeuristics=m.PostPruning(resultantTreeByVarianceHeuristic, L, K);
-        double accuracyIGHeuristicsAfterPruning=m.CalculateAccuracy(prunedTreeInformationGainHeuristics, m.validationData);
-        double accuracyVarHeuristicsAfterPruning=m.CalculateAccuracy(prunedTreeVarianceHeuristics,m.validationData);
-        System.out.println("Information Gain Heuristics "+accuracyIGHeuristicsAfterPruning);
-        System.out.println("Variance Heuristics"+accuracyVarHeuristicsAfterPruning);
-        
-        if(to_Print.equalsIgnoreCase("yes"))
+         int argsFlag=0;
+         if(args.length<6)
         {
-            System.out.println("\tPRINTING TREE\t");
-            System.out.println("Tree From Information Gain Heuristics-(After Pruning)");
-            m.PrintTree(prunedTreeInformationGainHeuristics,0,0);
-            System.out.println("Tree From Variance Heuristics-(After Pruning)");
-            m.PrintTree(prunedTreeVarianceHeuristics,0,0);
+            System.out.println("Insufficient Arguments Passed");
+            argsFlag=1;
         }
+        if(argsFlag!=1)
+        {
+            int L=Integer.parseInt(args[0]);
+            int K=Integer.parseInt(args[1]);
+            String filePathForTrainingData=args[2];
+            String filePathForTestData=args[3];
+            String filePathForValidationData=args[4];
+            String to_Print=args[5];
        
+            MainClass m=new MainClass();
+            ArrayList<DataSetRow> data=m.dataExtraction.ExtractDataFromDataSet(filePathForTrainingData);
+            m.validationData=m.dataExtraction.ExtractDataFromDataSet(filePathForValidationData);
+            ArrayList<DataSetRow> testData=m.dataExtraction.ExtractDataFromDataSet(filePathForTestData);
+
+            m.leafCount=0;
+            m.nonLeafCount=0;
+
+            TreeNode resultantTreeByInformationGainHeuristic=m.growTree(data,null);
+            TreeNode resultantTreeByVarianceHeuristic=m.growTreeByVarianceHeuristic(data,null);
+
+            System.out.println("\tACCURACIES BEFORE PRUNING\t");
+            double accuracyIGHeuristics=m.CalculateAccuracy(resultantTreeByInformationGainHeuristic, testData);
+            double accuracyVarHeuristics=m.CalculateAccuracy(resultantTreeByVarianceHeuristic, testData);
+            System.out.println("Information Gain Heuristics "+accuracyIGHeuristics);
+            System.out.println("Variance Heuristics"+accuracyVarHeuristics);
+
+            System.out.println("\tACCURACIES AFTER PRUNING\t");
+            TreeNode prunedTreeInformationGainHeuristics=m.PostPruning(resultantTreeByInformationGainHeuristic,L,K);
+            TreeNode prunedTreeVarianceHeuristics=m.PostPruning(resultantTreeByVarianceHeuristic, L, K);
+            double accuracyIGHeuristicsAfterPruning=m.CalculateAccuracy(prunedTreeInformationGainHeuristics, m.validationData);
+            double accuracyVarHeuristicsAfterPruning=m.CalculateAccuracy(prunedTreeVarianceHeuristics,m.validationData);
+            System.out.println("Information Gain Heuristics "+accuracyIGHeuristicsAfterPruning);
+            System.out.println("Variance Heuristics"+accuracyVarHeuristicsAfterPruning);
+
+            if(to_Print.equalsIgnoreCase("yes"))
+            {
+                System.out.println("\tPRINTING TREE\t");
+                System.out.println("Tree From Information Gain Heuristics-(After Pruning)");
+                m.PrintTree(prunedTreeInformationGainHeuristics,0,0);
+                System.out.println("Tree From Variance Heuristics-(After Pruning)");
+                m.PrintTree(prunedTreeVarianceHeuristics,0,0);
+            }
+        }
     }
 
  }
